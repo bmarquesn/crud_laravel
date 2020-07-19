@@ -9,13 +9,24 @@ use Illuminate\Support\Facades\DB;
 use App\Produto;
 
 class ProdutosController extends Controller {
-    public function list() {
+    public function list($message = null) {
         $produtos = DB::table('produtos')->get();
-		return view('produtos.list', ['produtos' => $produtos]);
+
+        if(isset($_GET['message']) && !empty($_GET['message'])) {
+            $message = $_GET['message'];
+        }
+
+		return view('crud_laravel', [
+            'page' => 'produtos.list'
+            ,'produtos' => $produtos
+            ,'message' => $message
+        ]);
     }
 
     public function create() {
-		return view('produtos.create');
+		return view('crud_laravel', [
+            'page' => 'produtos.create'
+        ]);
 	}
 
 	public function store(Request $request) {
@@ -27,17 +38,25 @@ class ProdutosController extends Controller {
 			'quantidade' => $request->quantidade
 		]);
 
-		return "Produto Criado com Sucesso!";
+		return redirect('produtos/listar?message=Produto Criado com Sucesso!');
 	}
 
 	public function show($id) {
-		$produto = Produto::findOrFail($id);
-		return view('produtos.show', ['produto' => $produto]);
+        $produto = Produto::findOrFail($id);
+
+        return view('crud_laravel', [
+            'page' => 'produtos.show'
+            ,'produto' => $produto
+        ]);
 	}
 
 	public function edit($id) {
 		$produto = Produto::findOrFail($id);
-		return view('produtos.edit', ['produto' => $produto]);
+
+        return view('crud_laravel', [
+            'page' => 'produtos.edit'
+            ,'produto' => $produto
+        ]);
 	}
 
 	public function update(Request $request, $id) {
@@ -48,20 +67,24 @@ class ProdutosController extends Controller {
 			'custo' => $request->custo,
 			'preco' => $request->preco,
 			'quantidade' => $request->quantidade
-		]);
+        ]);
 
-		return "Produto Atualizado com Sucesso!";
+        return redirect('produtos/listar?message=Produto Atualizado com Sucesso!');
 	}
 
 	public function delete($id) {
-		$produto = Produto::findOrFail($id);
-		return view('produtos.delete', ['produto' => $produto]);
+        $produto = Produto::findOrFail($id);
+
+        return view('crud_laravel', [
+            'page' => 'produtos.delete'
+            ,'produto' => $produto
+        ]);
 	}
 
 	public function destroy($id) {
 		$produto = Produto::findOrFail($id);
-		$produto->delete();
+        $produto->delete();
 
-		return "Produto Excluído com Sucesso!";
+        return redirect('produtos/listar?message=Produto Excluído com Sucesso!');
 	}
 }
